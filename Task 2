@@ -1,0 +1,34 @@
+const express = require("express");
+const app = express();
+app.use(express.json());
+
+let books = [
+  { id: 1, title: "1984", author: "George Orwell" },
+  { id: 2, title: "The Alchemist", author: "Paulo Coelho" }
+];
+
+// READ all
+app.get("/books", (req, res) => res.json(books));
+
+// CREATE
+app.post("/books", (req, res) => {
+  const book = { id: books.length + 1, ...req.body };
+  books.push(book);
+  res.status(201).json(book);
+});
+
+// UPDATE
+app.put("/books/:id", (req, res) => {
+  const book = books.find(b => b.id == req.params.id);
+  if (!book) return res.status(404).send("Book not found");
+  Object.assign(book, req.body);
+  res.json(book);
+});
+
+// DELETE
+app.delete("/books/:id", (req, res) => {
+  books = books.filter(b => b.id != req.params.id);
+  res.send("Book deleted");
+});
+
+app.listen(3000, () => console.log("API running on port 3000"));
